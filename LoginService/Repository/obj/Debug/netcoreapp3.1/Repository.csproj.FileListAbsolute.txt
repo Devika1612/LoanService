@@ -1,0 +1,4 @@
+G:\Devika\CDE PDP\LoginService\Repository\obj\Debug\netcoreapp3.1\Repository.csprojAssemblyReference.cache
+G:\Devika\CDE PDP\LoginService\Repository\obj\Debug\netcoreapp3.1\Repository.AssemblyInfoInputs.cache
+G:\Devika\CDE PDP\LoginService\Repository\obj\Debug\netcoreapp3.1\Repository.AssemblyInfo.cs
+G:\Devika\CDE PDP\LoginService\Repository\obj\Debug\netcoreapp3.1\Repository.csproj.CoreCompileInputs.cache

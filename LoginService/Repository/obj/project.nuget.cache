@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "/OilF5evSir711DHTADPmK4MzloKy5CpS/579qJJ33W946vsJZQ91dfu+b9+0hYs8192Q2rJPocB9GnqljOFKg==",
+  "success": true,
+  "projectFilePath": "G:\\Devika\\CDE PDP\\LoginService\\Repository\\Repository.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\PHANI'S\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}

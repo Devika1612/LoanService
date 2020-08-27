@@ -9,10 +9,10 @@ G:\Devika\CDE PDP\LoginService\LoginService\bin\Debug\netcoreapp2.1\LoanMngt.pdb
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.csprojAssemblyReference.cache
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.AssemblyInfoInputs.cache
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.AssemblyInfo.cs
-G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.csproj.CoreCompileInputs.cache
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.RazorAssemblyInfo.cache
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.RazorAssemblyInfo.cs
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.RazorTargetAssemblyInfo.cache
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.dll
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.pdb
 G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.genruntimeconfig.cache
+G:\Devika\CDE PDP\LoginService\LoginService\obj\Debug\netcoreapp2.1\LoanMngt.csproj.CoreCompileInputs.cache

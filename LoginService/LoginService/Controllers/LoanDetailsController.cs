@@ -1,32 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LoginService.Models;
 using Microsoft.AspNetCore.Authorization;
+using LoanMngt.Contracts;
 
 namespace LoginService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
     public class LoanDetailsController : ControllerBase
     {
-        private readonly LoanDetailContext _context;
-
-        public LoanDetailsController(LoanDetailContext context)
+       // private readonly LoanDetailContext _context;
+        //public LoanDetailsController(LoanDetailContext context)
+        //{
+        //    _context = context;
+        //}
+        private IRepositoryWrapper _repoWrapper;
+        public LoanDetailsController(IRepositoryWrapper repoWrapper)
         {
-            _context = context;
+            _repoWrapper = repoWrapper;
+        }
+
+  // GET: api/LoanDetails
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public IEnumerable<LoanDetail> GetLoanDetails()
+        {
+            return (IEnumerable<LoanDetail>)_repoWrapper.LoanDetail;
         }
 
         // GET: api/LoanDetails
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public IEnumerable<LoanDetail> GetLoanDetails()
+        [MapToApiVersion("1.1")]
+        public IEnumerable<LoanDetail> GetLoanDetailsV1_1()
         {
-            return _context.LoanDetails;
+            return (IEnumerable<LoanDetail>)_repoWrapper.LoanDetails;
         }
 
         // GET: api/LoanDetails/5
@@ -38,7 +52,7 @@ namespace LoginService.Controllers
                 return BadRequest(ModelState);
             }
 
-            var loanDetail = await _context.LoanDetails.FindAsync(id);
+            var loanDetail = await _repoWrapper.LoanDetails.FindAsync(id);
 
             if (loanDetail == null)
             {
@@ -51,8 +65,14 @@ namespace LoginService.Controllers
         // PUT: api/LoanDetails/5
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> PutLoanDetail([FromRoute] int id, [FromBody] LoanDetail loanDetail)
         {
+           // var retry = Policy
+           //.Handle<Exception>()
+           //.WaitAndRetry(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -63,11 +83,13 @@ namespace LoginService.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(loanDetail).State = EntityState.Modified;
+            _repoWrapper.Entry(loanDetail).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                
+                    await _repoWrapper.SaveChangesAsync();
+              
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -94,8 +116,8 @@ namespace LoginService.Controllers
                 return BadRequest(ModelState);
             }
 
-            _context.LoanDetails.Add(loanDetail);
-            await _context.SaveChangesAsync();
+            _repoWrapper.LoanDetails.Add(loanDetail);
+            await _repoWrapper.SaveChangesAsync();
 
             return CreatedAtAction("GetLoanDetail", new { id = loanDetail.LNId }, loanDetail);
         }
@@ -109,21 +131,21 @@ namespace LoginService.Controllers
                 return BadRequest(ModelState);
             }
 
-            var loanDetail = await _context.LoanDetails.FindAsync(id);
+            var loanDetail = await _repoWrapper.LoanDetails.FindAsync(id);
             if (loanDetail == null)
             {
                 return NotFound();
             }
 
-            _context.LoanDetails.Remove(loanDetail);
-            await _context.SaveChangesAsync();
+            _repoWrapper.LoanDetails.Remove(loanDetail);
+            await _repoWrapper.SaveChangesAsync();
 
             return Ok(loanDetail);
         }
 
         private bool LoanDetailExists(int id)
         {
-            return _context.LoanDetails.Any(e => e.LNId == id);
+            return _repoWrapper.LoanDetails.Any(e => e.LNId == id);
         }
     }
 }
