@@ -14,6 +14,6 @@ namespace LoanMngt.Contracts
         void Save();
         object Entry(LoanDetail loanDetail);
         Task SaveChangesAsync();
-       
+       // Task LoanDetails(int id);
     }
 }

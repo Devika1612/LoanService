@@ -6,20 +6,17 @@ using Microsoft.EntityFrameworkCore;
 using LoginService.Models;
 using Microsoft.AspNetCore.Authorization;
 using LoanMngt.Contracts;
+using System;
 
 namespace LoginService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/LoanDetails")]
     [ApiController]
     [ApiVersion("1.0")]
     [ApiVersion("1.1")]
     public class LoanDetailsController : ControllerBase
     {
-       // private readonly LoanDetailContext _context;
-        //public LoanDetailsController(LoanDetailContext context)
-        //{
-        //    _context = context;
-        //}
+      
         private IRepositoryWrapper _repoWrapper;
         public LoanDetailsController(IRepositoryWrapper repoWrapper)
         {
@@ -31,7 +28,14 @@ namespace LoginService.Controllers
         [Authorize(Roles = "Admin")]
         public IEnumerable<LoanDetail> GetLoanDetails()
         {
-            return (IEnumerable<LoanDetail>)_repoWrapper.LoanDetail;
+            try
+            {
+                return (IEnumerable<LoanDetail>)_repoWrapper.LoanDetail;
+            }
+            catch
+            {
+                return (IEnumerable<LoanDetail>)StatusCode(500, "Internal server error");
+            }
         }
 
         // GET: api/LoanDetails
@@ -40,67 +44,87 @@ namespace LoginService.Controllers
         [MapToApiVersion("1.1")]
         public IEnumerable<LoanDetail> GetLoanDetailsV1_1()
         {
-            return (IEnumerable<LoanDetail>)_repoWrapper.LoanDetails;
+            try
+            {
+                return (IEnumerable<LoanDetail>)_repoWrapper.LoanDetail;
+            }
+            catch
+            {
+                return (IEnumerable<LoanDetail>)StatusCode(500, "Internal server error");
+            }
         }
 
         // GET: api/LoanDetails/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetLoanDetail([FromRoute] int id)
+        public IActionResult GetLoanDetail([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var loandetail = _repoWrapper.LoanDetail.GetLoanDetail(id);
+                if (loandetail == null)
+                {
+
+                    return NotFound();
+                }
+                else
+                {
+                 return Ok(loandetail);
+                }
+            }
+            catch (Exception ex)
+            {
+               
+                return StatusCode(500, "Internal server error");
             }
 
-            var loanDetail = await _repoWrapper.LoanDetails.FindAsync(id);
-
-            if (loanDetail == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(loanDetail);
+           
         }
 
         // PUT: api/LoanDetails/5
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         
-        public async Task<IActionResult> PutLoanDetail([FromRoute] int id, [FromBody] LoanDetail loanDetail)
+        public  IActionResult PutLoanDetail([FromRoute] int id, [FromBody] LoanDetail loanDetail)
         {
-           // var retry = Policy
-           //.Handle<Exception>()
-           //.WaitAndRetry(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
-
-
-            if (!ModelState.IsValid)
+            try
+            { 
+            if(loanDetail==null)
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != loanDetail.LNId)
+           if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest("Invalid model object");
             }
 
-            _repoWrapper.Entry(loanDetail).State = EntityState.Modified;
-
-            try
-            {
-                
-                    await _repoWrapper.SaveChangesAsync();
-              
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LoanDetailExists(id))
+                if (id != loanDetail.LNId)
                 {
-                    return NotFound();
+                    return BadRequest("Invalid model object");
                 }
                 else
                 {
-                    throw;
+                    // _repoWrapper.Entry(loanDetail).State = EntityState.Modified;
+                    var loanEntity = _repoWrapper.LoanDetail.GetLoanDetail(id);
+
+
+                    _repoWrapper.LoanDetail.PutLoanDetail(loanEntity);
+                    _repoWrapper.Save();
+
                 }
+
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                //if (!LoanDetailExists(id))
+                //{
+                //    return NotFound();
+                //}
+                //else
+                //{
+                //    throw;
+                //}
+
+                return NotFound();
             }
 
             return NoContent();
@@ -111,41 +135,58 @@ namespace LoginService.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostLoanDetail([FromBody] LoanDetail loanDetail)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (loanDetail == null)
+                {
+                    return BadRequest(ModelState);
+                }
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _repoWrapper.LoanDetail.PostLoanDetail(loanDetail);
+                await _repoWrapper.SaveChangesAsync();
+
+                return CreatedAtAction("GetLoanDetail", new { id = loanDetail.LNId }, loanDetail);
             }
-
-            _repoWrapper.LoanDetails.Add(loanDetail);
-            await _repoWrapper.SaveChangesAsync();
-
-            return CreatedAtAction("GetLoanDetail", new { id = loanDetail.LNId }, loanDetail);
+            catch
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // DELETE: api/LoanDetails/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLoanDetail([FromRoute] int id)
+        public IActionResult DeleteLoanDetail([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            var loanDetail = await _repoWrapper.LoanDetails.FindAsync(id);
-            if (loanDetail == null)
+            try
             {
-                return NotFound();
+                var loanDetail = _repoWrapper.LoanDetail.GetLoanDetail(id);
+                if (loanDetail == null)
+                {
+                    return NotFound();
+                }
+
+                _repoWrapper.LoanDetail.DeleteLoanDetail(loanDetail);
+                _repoWrapper.Save();
+
+                return Ok(loanDetail);
             }
-
-            _repoWrapper.LoanDetails.Remove(loanDetail);
-            await _repoWrapper.SaveChangesAsync();
-
-            return Ok(loanDetail);
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
 
-        private bool LoanDetailExists(int id)
-        {
-            return _repoWrapper.LoanDetails.Any(e => e.LNId == id);
-        }
+        //private bool LoanDetailExists(int id)
+        //{
+        //    return _repoWrapper.LoanDetails.FindByCondition(e => e.LNId == id);
+        //}
     }
 }
